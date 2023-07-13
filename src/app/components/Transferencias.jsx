@@ -96,7 +96,9 @@ export default function TransferenciaPage() {
             type: 'date',
             sortable: false,
             editable: false,
-            valueGetter: (params) => new Date(params.row.dataTransferencia)
+            valueGetter: (params) => new Date(params.row.dataTransferencia),
+            align: 'center',
+            headerAlign: 'center',
         },
         {
             field: 'valor',
@@ -106,6 +108,8 @@ export default function TransferenciaPage() {
             width: 250,
             editable: false,
             valueFormatter: ({ value }) => currencyFormatter.format(value),
+            align: 'center',
+            headerAlign: 'center',
         },
         {
             field: 'tipoTransferencia',
@@ -113,13 +117,16 @@ export default function TransferenciaPage() {
             sortable: false,
             width: 250,
             editable: false,
+            align: 'center',
+            headerAlign: 'center',
         },
         {
             field: 'nomeOperadorTransacao',
             headerName: 'Nome operador transacionado',
             sortable: false,
             minWidth: 300,
-            cellClassName: 'text-align-center',
+            align: 'center',
+            headerAlign: 'center',
         },
     ];
 
@@ -142,7 +149,7 @@ export default function TransferenciaPage() {
             return (
                 <div className='centered'>
                     <div className='container'>
-                        <div className="row justify-content-md-center">
+                        <div className="row justify-content-md-center app-header">
                             <div className="col text-center">
                                 <label>Data de Inicio</label><br />
                                 <input type="date" value={filterDataInicioValue} onChange={handleChangeDataInicio} />
@@ -162,14 +169,14 @@ export default function TransferenciaPage() {
                         </div>
 
                         <div className="row align-items-center">
-                            <div className="col-8"></div>
-                            <div className="col-4 ">
+                            <div className="col-10"></div>
+                            <div className="col-2">
                                 <button type='button' className="btn btn-primary btn-app" onClick={fetchData}> Pesquisar </button>
                             </div>
 
                         </div>
 
-                        <div className="row"></div>
+                        <div className="row default-margin"></div>
                         <div style={{ width: '100%' }}>
                             <table>
                                 <tbody>
