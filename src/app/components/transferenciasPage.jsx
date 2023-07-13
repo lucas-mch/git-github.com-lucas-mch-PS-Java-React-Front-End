@@ -134,73 +134,81 @@ export default function TransferenciaPage() {
         return entity === null || entity.length === 0 || entity === '';
     }
 
-
-    if (data != null) {
-        return (
-            <div className='centered'>
-                <div className='container'>
-                    <div className="row justify-content-md-center">
-                        <div className="col text-center">
-                            <label>Data de Inicio</label><br />
-                            <input type="date" value={filterDataInicioValue} onChange={handleChangeDataInicio} />
+    const render = () => {
+        if (data != null) {
+            return (
+                <div className='centered'>
+                    <div className='container'>
+                        <div className="row justify-content-md-center">
+                            <div className="col text-center">
+                                <label>Data de Inicio</label><br />
+                                <input type="date" value={filterDataInicioValue} onChange={handleChangeDataInicio} />
+                            </div>
+                            <div className="col text-center">
+                                <label>Data de Fim</label> <br />
+                                <input type="date" value={filterDataFimValue} onChange={handleChangeDataFim} />
+                            </div>
+                            <div className="col text-center">
+                                <label>Nome operador transacionado</label> <br />
+                                <input type="text" value={filterNomeOperadorTransacaoValue} onChange={handleChangeNomeOperadorTransacao} />
+                            </div>
+                            <div className="col text-center">
+                                <label>Nº da conta</label> <br />
+                                <input type="number" value={filterNumeroContaValue} onChange={handleChangeNumeroConta} />
+                            </div>
                         </div>
-                        <div className="col text-center">
-                            <label>Data de Fim</label> <br />
-                            <input type="date" value={filterDataFimValue} onChange={handleChangeDataFim} />
+    
+                        <div className="row align-items-center">
+                            <div className="col-8"></div>
+                            <div className="col-4 ">
+                                <button type='button' className="btn btn-primary btn-app" onClick={fetchData}> Pesquisar </button>
+                            </div>
+    
                         </div>
-                        <div className="col text-center">
-                            <label>Nome operador transacionado</label> <br />
-                            <input type="text" value={filterNomeOperadorTransacaoValue} onChange={handleChangeNomeOperadorTransacao} />
-                        </div>
-                        <div className="col text-center">
-                            <label>Nº da conta</label> <br />
-                            <input type="number" value={filterNumeroContaValue} onChange={handleChangeNumeroConta} />
-                        </div>
-                    </div>
-
-                    <div className="row align-items-center">
-                        <div className="col-8"></div>
-                        <div className="col-4 ">
-                            <button type='button' className="btn btn-primary btn-app" onClick={fetchData}> Pesquisar </button>
-                        </div>
-
-                    </div>
-
-                    <div className="row"></div>
-                    <div style={{ width: '100%' }}>
-                        <table>
-                            <tbody>
-                                <tr>
-                                { !isEmpty(filterNumeroContaValue) ? <th>Saldo total no periodo: {getSaldoTotal()} </th> : null }                                </tr>
-                            </tbody>
-
-                        </table>
-                        <DataGrid
-                            autoHeight {...data}
-                            rows={data.content}
-                            columns={columns}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: {
-                                        pageSize: data.size,
+    
+                        <div className="row"></div>
+                        <div style={{ width: '100%' }}>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                    { !isEmpty(filterNumeroContaValue) ? <th>Saldo total no periodo: {getSaldoTotal()} </th> : null }                                </tr>
+                                </tbody>
+    
+                            </table>
+                            <DataGrid
+                                autoHeight {...data}
+                                rows={data.content}
+                                columns={columns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: data.size,
+                                        },
                                     },
-                                },
-                            }}
-                            pageSizeOptions={[5]}
-                            disableRowSelectionOnClick
-                        />
+                                }}
+                                pageSizeOptions={[5]}
+                                disableRowSelectionOnClick
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
-    }
+            );
+        }
+    
+        if (error != null) {
+            return (
+                <div>
+                    <h1>{error}</h1>
+                </div>
+            );
+        }
 
-    if (error != null) {
         return (
-            <div>
-                <h1>{error}</h1>
+            <div> 
+                <h2>Loading...</h2>
             </div>
         );
     }
 
+   return render();
 }
