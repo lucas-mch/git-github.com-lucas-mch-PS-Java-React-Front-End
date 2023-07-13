@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import Loading from './common/Loading'
+import Error from './common/error';
 
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -11,6 +13,7 @@ export default function TransferenciaPage() {
     const [filterNomeOperadorTransacaoValue, setFilterNomeOperadorTransacaoValue] = useState('');
     const [filterNumeroContaValue, setfilterNumeroContaValue] = useState('');
 
+    const transferenciaPage = 'http://localhost:8080/transferencias/page'
 
     const handleChangeDataInicio = (event) => {
         setFilterDataInicioValue(event.target.value);
@@ -67,7 +70,7 @@ export default function TransferenciaPage() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch('http://localhost:8080/transferencias/page' + getFilter());
+            const response = await fetch(transferenciaPage + getFilter());
             if (!response.ok) {
                 throw new Error('Request failed');
             }
@@ -134,73 +137,77 @@ export default function TransferenciaPage() {
         return entity === null || entity.length === 0 || entity === '';
     }
 
-
-    if (data != null) {
-        return (
-            <div className='centered'>
-                <div className='container'>
-                    <div className="row justify-content-md-center">
-                        <div className="col text-center">
-                            <label>Data de Inicio</label><br />
-                            <input type="date" value={filterDataInicioValue} onChange={handleChangeDataInicio} />
-                        </div>
-                        <div className="col text-center">
-                            <label>Data de Fim</label> <br />
-                            <input type="date" value={filterDataFimValue} onChange={handleChangeDataFim} />
-                        </div>
-                        <div className="col text-center">
-                            <label>Nome operador transacionado</label> <br />
-                            <input type="text" value={filterNomeOperadorTransacaoValue} onChange={handleChangeNomeOperadorTransacao} />
-                        </div>
-                        <div className="col text-center">
-                            <label>Nº da conta</label> <br />
-                            <input type="number" value={filterNumeroContaValue} onChange={handleChangeNumeroConta} />
-                        </div>
-                    </div>
-
-                    <div className="row align-items-center">
-                        <div className="col-8"></div>
-                        <div className="col-4 ">
-                            <button type='button' className="btn btn-primary btn-app" onClick={fetchData}> Pesquisar </button>
+    const render = () => {
+        if (data != null) {
+            return (
+                <div className='centered'>
+                    <div className='container'>
+                        <div className="row justify-content-md-center">
+                            <div className="col text-center">
+                                <label>Data de Inicio</label><br />
+                                <input type="date" value={filterDataInicioValue} onChange={handleChangeDataInicio} />
+                            </div>
+                            <div className="col text-center">
+                                <label>Data de Fim</label> <br />
+                                <input type="date" value={filterDataFimValue} onChange={handleChangeDataFim} />
+                            </div>
+                            <div className="col text-center">
+                                <label>Nome operador transacionado</label> <br />
+                                <input type="text" value={filterNomeOperadorTransacaoValue} onChange={handleChangeNomeOperadorTransacao} />
+                            </div>
+                            <div className="col text-center">
+                                <label>Nº da conta</label> <br />
+                                <input type="number" value={filterNumeroContaValue} onChange={handleChangeNumeroConta} />
+                            </div>
                         </div>
 
-                    </div>
+                        <div className="row align-items-center">
+                            <div className="col-8"></div>
+                            <div className="col-4 ">
+                                <button type='button' className="btn btn-primary btn-app" onClick={fetchData}> Pesquisar </button>
+                            </div>
 
-                    <div className="row"></div>
-                    <div style={{ width: '100%' }}>
-                        <table>
-                            <tbody>
-                                <tr>
-                                { !isEmpty(filterNumeroContaValue) ? <th>Saldo total no periodo: {getSaldoTotal()} </th> : null }                                </tr>
-                            </tbody>
+                        </div>
 
-                        </table>
-                        <DataGrid
-                            autoHeight {...data}
-                            rows={data.content}
-                            columns={columns}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: {
-                                        pageSize: data.size,
+                        <div className="row"></div>
+                        <div style={{ width: '100%' }}>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        {!isEmpty(filterNumeroContaValue) ? <th>Saldo total no periodo: {getSaldoTotal()} </th> : null}                                </tr>
+                                </tbody>
+
+                            </table>
+                            <DataGrid
+                                autoHeight {...data}
+                                rows={data.content}
+                                columns={columns}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: data.size,
+                                        },
                                     },
-                                },
-                            }}
-                            pageSizeOptions={[5]}
-                            disableRowSelectionOnClick
-                        />
+                                }}
+                                pageSizeOptions={[5]}
+                                disableRowSelectionOnClick
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
-    }
+            );
+        }
 
-    if (error != null) {
+        if (error != null) {
+            return (
+                <Error message={error} caminho={transferenciaPage}/>
+            );
+        }
+
         return (
-            <div>
-                <h1>{error}</h1>
-            </div>
+            <Loading/>
         );
     }
 
+    return render();
 }
