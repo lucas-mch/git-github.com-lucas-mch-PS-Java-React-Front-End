@@ -4,6 +4,7 @@ import axios from 'axios';
 import moment from 'moment';
 import Loading from './common/Loading'
 import Error from './common/error';
+import Box from '@mui/material/Box';
 
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -88,6 +89,15 @@ export default function TransferenciaPage() {
         currency: 'BRL',
     });
 
+    const tipoTransferenciaFormatter = function(tipoTransferencia){
+        switch(tipoTransferencia){ 
+            case 'DEPOSITO': return 'Depósito';
+            case 'SAQUE': return 'Saque';
+            case 'TRANSFERENCIA': return 'Transferência';
+            default: return '';
+        }
+    }
+
     const columns = [
         {
             field: 'dataTransferencia',
@@ -118,6 +128,7 @@ export default function TransferenciaPage() {
             width: 250,
             editable: false,
             align: 'center',
+            valueFormatter: ({ value }) => tipoTransferenciaFormatter(value),
             headerAlign: 'center',
         },
         {
@@ -185,20 +196,22 @@ export default function TransferenciaPage() {
                                 </tbody>
 
                             </table>
-                            <DataGrid
-                                autoHeight {...data}
-                                rows={data.content}
-                                columns={columns}
-                                initialState={{
-                                    pagination: {
-                                        paginationModel: {
-                                            pageSize: data.size,
+                            <Box>
+                                <DataGrid
+                                    autoHeight {...data}
+                                    rows={data.content}
+                                    columns={columns}
+                                    initialState={{
+                                        pagination: {
+                                            paginationModel: {
+                                                pageSize: data.size,
+                                            },
                                         },
-                                    },
-                                }}
-                                pageSizeOptions={[5]}
-                                disableRowSelectionOnClick
-                            />
+                                    }}
+                                    pageSizeOptions={[5]}
+                                    disableRowSelectionOnClick
+                                />
+                            </Box>
                         </div>
                     </div>
                 </div>
@@ -207,12 +220,12 @@ export default function TransferenciaPage() {
 
         if (error != null) {
             return (
-                <Error message={error} caminho={transferenciaPage}/>
+                <Error message={error} caminho={transferenciaPage} />
             );
         }
 
         return (
-            <Loading/>
+            <Loading />
         );
     }
 
