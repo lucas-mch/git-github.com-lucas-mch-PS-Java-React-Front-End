@@ -12,15 +12,15 @@ export default function TransferenciaPage() {
 
     const handleChangeDataInicio = (event) => {
         setFilterDataInicioValue(event.target.value);
-      };
+    };
 
-      const handleChangeDataFim = (event) => {
+    const handleChangeDataFim = (event) => {
         setFilterDataFimValue(event.target.value);
-      };
+    };
 
-      const handleChangeNomeOperadorTransacao = (event) => {
+    const handleChangeNomeOperadorTransacao = (event) => {
         setFilterNomeOperadorTransacaoValue(event.target.value);
-      };
+    };
 
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -28,39 +28,36 @@ export default function TransferenciaPage() {
 
     useEffect(() => {
         fetchData();
-    }, []);
-
-
+    },[]);
 
     const getFilter = () => {
         let params = [];
-      
+
         if (filterDataInicioValue !== null && filterDataInicioValue.length > 0) {
-          params.push("?filterDataInicio=" + moment(filterDataInicioValue).format("dd/MM/yyyy"));
+            params.push("?filterDataInicio=" + moment(filterDataInicioValue).format("dd/MM/yyyy"));
         }
-      
+
         if (filterDataFimValue !== null && filterDataFimValue.length > 0) {
-          params.push("filterDataFim=" +  moment(filterDataFimValue).format("dd/MM/yyyy"));
+            params.push("filterDataFim=" + moment(filterDataFimValue).format("dd/MM/yyyy"));
         }
-      
+
         if (filterNomeOperadorTransacaoValue !== null && filterNomeOperadorTransacaoValue.length > 0) {
-            if(params.length < 1) { params.push("?filterNomeOperadorTransacao=" + filterNomeOperadorTransacaoValue);} else {
+            if (params.length < 1) { params.push("?filterNomeOperadorTransacao=" + filterNomeOperadorTransacaoValue); } else {
                 params.push("filterNomeOperadorTransacao=" + filterNomeOperadorTransacaoValue);
             }
-         
         }
-      
+
         if (params.length > 0) {
-          console.log(params.join("&"));
-          return params.join("&");
+            console.log(params.join("&"));
+            return params.join("&");
         } else {
-          return "";
+            return "";
         }
-      };
+    };
 
     const fetchData = async () => {
         try {
-            const response = await fetch('http://localhost:8080/transferencias/page'+ getFilter());
+            const response = await fetch('http://localhost:8080/transferencias/page' + getFilter());
             if (!response.ok) {
                 throw new Error('Request failed');
             }
@@ -72,6 +69,11 @@ export default function TransferenciaPage() {
             setIsLoading(false);
         }
     };
+
+    const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      });
 
     const columns = [
         {
@@ -87,8 +89,10 @@ export default function TransferenciaPage() {
             field: 'valor',
             headerName: 'Valentia',
             sortable: false,
+            type: 'number',
             width: 250,
             editable: false,
+            valueFormatter: ({ value }) => currencyFormatter.format(value),
         },
         {
             field: 'tipoTransferencia',
@@ -108,21 +112,20 @@ export default function TransferenciaPage() {
 
     if (data != null) {
         return (
-
             <div className='centered'>
                 <div className='container'>
                     <div className="row justify-content-md-center">
                         <div className="col">
                             <label>Data de Inicio</label><br />
-                            <input type="date" value={filterDataInicioValue} onChange={handleChangeDataInicio}/>
+                            <input type="date" value={filterDataInicioValue} onChange={handleChangeDataInicio} />
                         </div>
                         <div className="col">
                             <label>Data de Fim</label> <br />
-                            <input type="date" value={filterDataFimValue} onChange={handleChangeDataFim}/>
+                            <input type="date" value={filterDataFimValue} onChange={handleChangeDataFim} />
                         </div>
                         <div className="col">
                             <label>Nome operador transacionado</label>
-                            <input type="text" value={filterNomeOperadorTransacaoValue} onChange={handleChangeNomeOperadorTransacao}/>
+                            <input type="text" value={filterNomeOperadorTransacaoValue} onChange={handleChangeNomeOperadorTransacao} />
                         </div>
                     </div>
 
@@ -133,27 +136,33 @@ export default function TransferenciaPage() {
                         </div>
 
                     </div>
-                    
+
                     <div className="row"></div>
                     <div style={{ width: '100%' }}>
-                    <DataGrid
-                        autoHeight {...data}
-                        rows={data.content}
-                        columns={columns}
-                        initialState={{
-                            pagination: {
-                                paginationModel: {
-                                    pageSize: data.size,
+                        <DataGrid
+                            autoHeight {...data}
+                            rows={data.content}
+                            columns={columns}
+                            initialState={{
+                                pagination: {
+                                    paginationModel: {
+                                        pageSize: data.size,
+                                    },
                                 },
-                            },
-                        }}
-                        pageSizeOptions={[5]}
-                        disableRowSelectionOnClick
-                    />
+                            }}
+                            pageSizeOptions={[5]}
+                            disableRowSelectionOnClick
+                        />
                     </div>
-                    
-
                 </div>
+            </div>
+        );
+    }
+
+    if (error != null) {
+        return (
+            <div>
+                <h1>{error}</h1>
             </div>
         );
     }
