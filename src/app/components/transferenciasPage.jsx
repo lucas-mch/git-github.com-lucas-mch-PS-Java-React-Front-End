@@ -9,6 +9,8 @@ export default function TransferenciaPage() {
     const [filterDataInicioValue, setFilterDataInicioValue] = useState('');
     const [filterDataFimValue, setFilterDataFimValue] = useState('');
     const [filterNomeOperadorTransacaoValue, setFilterNomeOperadorTransacaoValue] = useState('');
+    const [filterNumeroContaValue, setfilterNumeroContaValue] = useState('');
+
 
     const handleChangeDataInicio = (event) => {
         setFilterDataInicioValue(event.target.value);
@@ -22,19 +24,27 @@ export default function TransferenciaPage() {
         setFilterNomeOperadorTransacaoValue(event.target.value);
     };
 
+    const handleChangeNumeroConta = (event) => {
+        setfilterNumeroContaValue(event.target.value);
+    };
+
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         fetchData();
-    },[]);
+    }, []);
 
     const getFilter = () => {
         let params = [];
 
         if (filterDataInicioValue !== null && filterDataInicioValue.length > 0) {
             params.push("?filterDataInicio=" + moment(filterDataInicioValue).format("dd/MM/yyyy"));
+        }
+
+        if (!isEmpty(filterNumeroContaValue)) {
+            params.push("?filterContaID=" + filterNumeroContaValue);
         }
 
         if (filterDataFimValue !== null && filterDataFimValue.length > 0) {
@@ -73,7 +83,7 @@ export default function TransferenciaPage() {
     const currencyFormatter = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',
-      });
+    });
 
     const columns = [
         {
@@ -110,22 +120,41 @@ export default function TransferenciaPage() {
         },
     ];
 
+    const getSaldoTotal = () => {
+        let soma = 0;
+        if (!isEmpty(data)) {
+            data.content.map(rows => {
+                soma += rows.valor;
+            });
+        }
+        return currencyFormatter.format(soma);
+    }
+
+    const isEmpty = (entity) => {
+        return entity === null || entity.length === 0 || entity === '';
+    }
+
+
     if (data != null) {
         return (
             <div className='centered'>
                 <div className='container'>
                     <div className="row justify-content-md-center">
-                        <div className="col">
+                        <div className="col text-center">
                             <label>Data de Inicio</label><br />
                             <input type="date" value={filterDataInicioValue} onChange={handleChangeDataInicio} />
                         </div>
-                        <div className="col">
+                        <div className="col text-center">
                             <label>Data de Fim</label> <br />
                             <input type="date" value={filterDataFimValue} onChange={handleChangeDataFim} />
                         </div>
-                        <div className="col">
-                            <label>Nome operador transacionado</label>
+                        <div className="col text-center">
+                            <label>Nome operador transacionado</label> <br />
                             <input type="text" value={filterNomeOperadorTransacaoValue} onChange={handleChangeNomeOperadorTransacao} />
+                        </div>
+                        <div className="col text-center">
+                            <label>Nº da conta</label> <br />
+                            <input type="number" value={filterNumeroContaValue} onChange={handleChangeNumeroConta} />
                         </div>
                     </div>
 
@@ -139,6 +168,13 @@ export default function TransferenciaPage() {
 
                     <div className="row"></div>
                     <div style={{ width: '100%' }}>
+                        <table>
+                            <tbody>
+                                <tr>
+                                { !isEmpty(filterNumeroContaValue) ? <th>Saldo total no periodo: {getSaldoTotal()} </th> : null }                                </tr>
+                            </tbody>
+
+                        </table>
                         <DataGrid
                             autoHeight {...data}
                             rows={data.content}
