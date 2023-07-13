@@ -2,18 +2,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import Loading from './common/Loading'
-import Error from './common/error';
+import Loading from '../common/Loading'
+import Error from '../common/error';
 import Box from '@mui/material/Box';
+
+import {columns} from './TransferenciasService'
 
 import { DataGrid } from '@mui/x-data-grid';
 
 export default function TransferenciaPage() {
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const [filterDataInicioValue, setFilterDataInicioValue] = useState('');
     const [filterDataFimValue, setFilterDataFimValue] = useState('');
     const [filterNomeOperadorTransacaoValue, setFilterNomeOperadorTransacaoValue] = useState('');
     const [filterNumeroContaValue, setfilterNumeroContaValue] = useState('');
-
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const transferenciaPage = 'http://localhost:8080/transferencias/page'
 
     const handleChangeDataInicio = (event) => {
@@ -32,18 +41,10 @@ export default function TransferenciaPage() {
         setfilterNumeroContaValue(event.target.value);
     };
 
-    const [data, setData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     const getFilter = () => {
         let params = [];
 
-        if (filterDataInicioValue !== null && filterDataInicioValue.length > 0) {
+        if (!isEmpty(filterDataInicioValue)) {
             params.push("?filterDataInicio=" + moment(filterDataInicioValue).format("dd/MM/yyyy"));
         }
 
@@ -51,12 +52,12 @@ export default function TransferenciaPage() {
             params.push("?filterContaID=" + filterNumeroContaValue);
         }
 
-        if (filterDataFimValue !== null && filterDataFimValue.length > 0) {
+        if (!isEmpty(filterDataFimValue)) {
             params.push("filterDataFim=" + moment(filterDataFimValue).format("dd/MM/yyyy"));
         }
 
-        if (filterNomeOperadorTransacaoValue !== null && filterNomeOperadorTransacaoValue.length > 0) {
-            if (params.length < 1) { params.push("?filterNomeOperadorTransacao=" + filterNomeOperadorTransacaoValue); } else {
+        if (!isEmpty(filterNomeOperadorTransacaoValue)) {
+            if (isEmpty(params)) { params.push("?filterNomeOperadorTransacao=" + filterNomeOperadorTransacaoValue); } else {
                 params.push("filterNomeOperadorTransacao=" + filterNomeOperadorTransacaoValue);
             }
         }
@@ -83,63 +84,6 @@ export default function TransferenciaPage() {
             setIsLoading(false);
         }
     };
-
-    const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    });
-
-    const tipoTransferenciaFormatter = function(tipoTransferencia){
-        switch(tipoTransferencia){ 
-            case 'DEPOSITO': return 'Depósito';
-            case 'SAQUE': return 'Saque';
-            case 'TRANSFERENCIA': return 'Transferência';
-            default: return '';
-        }
-    }
-
-    const columns = [
-        {
-            field: 'dataTransferencia',
-            headerName: 'Dados',
-            width: 250,
-            type: 'date',
-            sortable: false,
-            editable: false,
-            valueGetter: (params) => new Date(params.row.dataTransferencia),
-            align: 'center',
-            headerAlign: 'center',
-        },
-        {
-            field: 'valor',
-            headerName: 'Valentia',
-            sortable: false,
-            type: 'number',
-            width: 250,
-            editable: false,
-            valueFormatter: ({ value }) => currencyFormatter.format(value),
-            align: 'center',
-            headerAlign: 'center',
-        },
-        {
-            field: 'tipoTransferencia',
-            headerName: 'Tipo',
-            sortable: false,
-            width: 250,
-            editable: false,
-            align: 'center',
-            valueFormatter: ({ value }) => tipoTransferenciaFormatter(value),
-            headerAlign: 'center',
-        },
-        {
-            field: 'nomeOperadorTransacao',
-            headerName: 'Nome operador transacionado',
-            sortable: false,
-            minWidth: 300,
-            align: 'center',
-            headerAlign: 'center',
-        },
-    ];
 
     const getSaldoTotal = () => {
         let soma = 0;
