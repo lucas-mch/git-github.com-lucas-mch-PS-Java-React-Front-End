@@ -6,7 +6,7 @@ import Loading from '../common/Loading'
 import Error from '../common/error';
 import Box from '@mui/material/Box';
 
-import {columns} from './TransferenciasService'
+import {columns , getSaldoTotal, isEmpty } from './TransferenciasService'
 
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -85,20 +85,6 @@ export default function TransferenciaPage() {
         }
     };
 
-    const getSaldoTotal = () => {
-        let soma = 0;
-        if (!isEmpty(data)) {
-            data.content.map(rows => {
-                soma += rows.valor;
-            });
-        }
-        return currencyFormatter.format(soma);
-    }
-
-    const isEmpty = (entity) => {
-        return entity === null || entity.length === 0 || entity === '';
-    }
-
     const render = () => {
         if (data != null) {
             return (
@@ -135,8 +121,12 @@ export default function TransferenciaPage() {
                         <div style={{ width: '100%' }}>
                             <table>
                                 <tbody>
-                                    <tr>
-                                        {!isEmpty(filterNumeroContaValue) ? <th>Saldo total no periodo: {getSaldoTotal()} </th> : null}                                </tr>
+                                        {!isEmpty(filterNumeroContaValue) ?
+                                        <tr>
+                                            <th> 
+                                            Saldo total no periodo: {getSaldoTotal(data)} 
+                                            </th>  
+                                        </tr> : null }                              
                                 </tbody>
 
                             </table>

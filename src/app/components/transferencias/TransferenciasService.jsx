@@ -1,3 +1,31 @@
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+});
+
+const tipoTransferenciaFormatter = function(tipoTransferencia){
+    switch(tipoTransferencia){ 
+        case 'DEPOSITO': return 'Depósito';
+        case 'SAQUE': return 'Saque';
+        case 'TRANSFERENCIA': return 'Transferência';
+        default: return '';
+    }
+}
+
+export const getSaldoTotal = (data) => {
+    let soma = 0;
+    if (!isEmpty(data)) {
+        data.content.map(rows => {
+            soma += rows.valor;
+        });
+    }
+    return currencyFormatter.format(soma);
+}
+
+export const isEmpty = (entity) => {
+    return entity === null || entity.length === 0 || entity === '';
+}
+
 export const columns = [
     {
         field: 'dataTransferencia',
@@ -41,18 +69,5 @@ export const columns = [
     },
 ];
 
-const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-});
 
-const tipoTransferenciaFormatter = function(tipoTransferencia){
-    switch(tipoTransferencia){ 
-        case 'DEPOSITO': return 'Depósito';
-        case 'SAQUE': return 'Saque';
-        case 'TRANSFERENCIA': return 'Transferência';
-        default: return '';
-    }
-}
-
-export default columns;
+export default { columns , getSaldoTotal, isEmpty};
