@@ -63,7 +63,6 @@ export default function TransferenciaPage() {
         }
 
         if (params.length > 0) {
-            console.log(params.join("&"));
             return params.join("&");
         } else {
             return "";
