@@ -80,7 +80,6 @@ export const getFilter = (filters) => {
 
     filters.map(filter => {
         if(!isEmpty(filter[value])) {
-            console.log('first if', filter[type] === 'date');
             if(!isEmpty(filter[type]) && filter[type] == 'date') {  params.push(filter[key] + '=' + moment(filter[value]).format('yyyy-MM-DD')) ; } else {
                params.push(filter[key] + '=' + filter[value]) ;
             }
