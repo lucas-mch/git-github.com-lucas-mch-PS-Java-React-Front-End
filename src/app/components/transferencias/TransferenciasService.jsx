@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
@@ -23,7 +25,7 @@ export const getSaldoTotal = (data) => {
 }
 
 export const isEmpty = (entity) => {
-    return entity === null || entity.length === 0 || entity === '';
+    return entity === undefined || entity === null || entity.length === 0 || entity === '';
 }
 
 export const columns = [
@@ -69,5 +71,24 @@ export const columns = [
     },
 ];
 
+export const getFilter = (filters) => {
+    var key = 0;
+    var value = 1;
+    var type = 2;
 
-export default { columns , getSaldoTotal, isEmpty};
+    var params = [];
+
+    filters.map(filter => {
+        if(!isEmpty(filter[value])) {
+            console.log('first if', filter[type] === 'date');
+            if(!isEmpty(filter[type]) && filter[type] == 'date') {  params.push('?' + filter[key] + '=' + moment(filter[value]).format("dd/MM/yyyy")) ; } else {
+               params.push('?' + filter[key] + '=' + filter[value]) ;
+            }
+        }
+    });
+  
+  return params.join('&');
+};
+
+// eslint-disable-next-line import/no-anonymous-default-export
+export default { columns , getSaldoTotal, isEmpty, getFilter};

@@ -1,12 +1,11 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import moment from 'moment';
 import Loading from '../common/Loading'
 import Error from '../common/error';
 import Box from '@mui/material/Box';
 
-import {columns , getSaldoTotal, isEmpty } from './TransferenciasService'
+import { columns, getSaldoTotal, isEmpty , getFilter} from './TransferenciasService'
 
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -25,6 +24,12 @@ export default function TransferenciaPage() {
     const [error, setError] = useState(null);
     const transferenciaPage = 'http://localhost:8080/transferencias/page'
 
+    const filters = [ ['filterDataInicio', filterDataInicioValue, 'date'] , 
+                      ['filterDataFim', filterDataFimValue, 'date'],
+                      ['filterNomeOperadorTransacao', filterNomeOperadorTransacaoValue], 
+                      ['filterContaID', filterNumeroContaValue]
+                    ];
+
     const handleChangeDataInicio = (event) => {
         setFilterDataInicioValue(event.target.value);
     };
@@ -41,37 +46,9 @@ export default function TransferenciaPage() {
         setfilterNumeroContaValue(event.target.value);
     };
 
-    const getFilter = () => {
-        let params = [];
-
-        if (!isEmpty(filterDataInicioValue)) {
-            params.push("?filterDataInicio=" + moment(filterDataInicioValue).format("dd/MM/yyyy"));
-        }
-
-        if (!isEmpty(filterNumeroContaValue)) {
-            params.push("?filterContaID=" + filterNumeroContaValue);
-        }
-
-        if (!isEmpty(filterDataFimValue)) {
-            params.push("filterDataFim=" + moment(filterDataFimValue).format("dd/MM/yyyy"));
-        }
-
-        if (!isEmpty(filterNomeOperadorTransacaoValue)) {
-            if (isEmpty(params)) { params.push("?filterNomeOperadorTransacao=" + filterNomeOperadorTransacaoValue); } else {
-                params.push("filterNomeOperadorTransacao=" + filterNomeOperadorTransacaoValue);
-            }
-        }
-
-        if (params.length > 0) {
-            return params.join("&");
-        } else {
-            return "";
-        }
-    };
-
     const fetchData = async () => {
         try {
-            const response = await fetch(transferenciaPage + getFilter());
+            const response = await fetch(transferenciaPage +  getFilter(filters));
             if (!response.ok) {
                 throw new Error('Request failed');
             }
@@ -120,12 +97,12 @@ export default function TransferenciaPage() {
                         <div style={{ width: '100%' }}>
                             <table>
                                 <tbody>
-                                        {!isEmpty(filterNumeroContaValue) ?
+                                    {!isEmpty(filterNumeroContaValue) ?
                                         <tr>
-                                            <th> 
-                                            Saldo total no periodo: {getSaldoTotal(data)} 
-                                            </th>  
-                                        </tr> : null }                              
+                                            <th>
+                                                Saldo total no periodo: {getSaldoTotal(data)}
+                                            </th>
+                                        </tr> : null}
                                 </tbody>
 
                             </table>
